@@ -1,3 +1,2 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-console.log("Hello World");
+import './scss/custom.scss';
+import './app.scss';
