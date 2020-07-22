@@ -6,39 +6,14 @@ module.exports = {
   mode: "development",
   entry: "./src/index.ts",
   devtool: "inline-source-map",
-  devServer: {
-    contentBase: "./dist",
-  },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-  },
-  optimization: {
-    moduleIds: "hashed",
-    runtimeChunk: "single",
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: "vendors",
-          chunks: "all",
-        },
-      },
-    },
-  },
   plugins: [
     new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
     new HtmlWebpackPlugin({
-      title: "Output Management",
+      title: "Development",
     }),
   ],
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        use: "ts-loader",
-        exclude: /node_modules/,
-      },
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
@@ -48,12 +23,17 @@ module.exports = {
         use: ["file-loader"],
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: ["file-loader"],
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: [".ts", ".js", ".tsx"],
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
   },
 };

@@ -1,11 +1,3 @@
-import * as _ from "lodash";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function component() {
-  const element = document.createElement("div");
-
-  element.innerHTML = _.join(["Hello", "webpack"], " ");
-
-  return element;
-}
-
-document.body.appendChild(component());
+console.log("Hello World");
