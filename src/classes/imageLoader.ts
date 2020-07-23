@@ -16,6 +16,7 @@ export type ImageResult = {
 };
 
 export class ImagesLoader {
+  private cachedImages: ImageResult[] = [];
   public getRandomImages(): Promise<ImageData[]> {
     return window
       .fetch("https://picsum.photos/v2/list?page=1&limit=10")
@@ -23,29 +24,34 @@ export class ImagesLoader {
   }
 
   public loadImage(imageData: ImageData): Observable<ImageResult> {
-    return from(window.fetch(imageData.download_url).then(result => result.blob())).pipe(
+    return from(
+      window.fetch(imageData.download_url).then((result) => {console.log(result);return result.blob();})
+    ).pipe(
       map((blob) => {
-        console.log(blob);
-        return { data: imageData, result: blob as Blob };
+        const data = { data: imageData, result: blob as Blob };
+        console.log(data);
+        this.cachedImages.push(data);
+        return data;
       })
     );
   }
 
+  public getCachedImages(): ImageResult[] {
+    return this.cachedImages;
+  }
+
   public insertImageToHtml(
-    element: HTMLElement,
+    element: Element,
     imageResult: ImageResult
   ): void {
-    const myImage = document.createElement("img");
-    const myFigure = document.createElement("figure");
-    const myCaption = document.createElement("caption");
+    const div = document.createElement("div");
+    div.setAttribute("class", "col-md-4");
+    const myImage = document.createElement("img")
+    myImage.setAttribute("style", "width: 100%");
     const imageURL = window.URL.createObjectURL(imageResult.result);
-
     myImage.src = imageURL;
     myImage.setAttribute("alt", imageResult.data.author);
-    myCaption.innerHTML = "<strong>" + imageResult.data.id + "</strong>";
-
-    element.appendChild(myFigure);
-    myFigure.appendChild(myImage);
-    myFigure.appendChild(myCaption);
+    element.appendChild(div);
+    div.appendChild(myImage);
   }
 }

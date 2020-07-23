@@ -2,7 +2,7 @@ export class SpinnerLoading {
   private id: string = "spinner";
   private spinnerElement: HTMLElement;
 
-  addSpinner(element: HTMLElement) {
+  addSpinner(element: Element) {
     this.spinnerElement = document.createElement("div");
     this.spinnerElement.setAttribute("id", this.id);
     this.spinnerElement.setAttribute("style", "background-color: orange;height: 500px;font-size: 40px;");

@@ -1,21 +1,22 @@
-const CACHE_ID = 'v1';
+const CACHE_ID = "v1";
+const cachedFiles = ["/gallery/404.png"];
 
 self.addEventListener("install", function (event) {
   event.waitUntil(
     caches.open(CACHE_ID).then(function (cache) {
-      console.log("cache opened!");
+      cache.addAll(cachedFiles);
+      console.log("cache Installed");
     })
   );
 });
 
 self.addEventListener("fetch", function (event) {
-  console.log("fetch listener");
   event.respondWith(
     caches.match(event.request).then(function (response) {
-        console.log("DO i pass here ?");
       // caches.match() always resolves
       // but in case of success response will have value
       if (response) {
+        console.log("returning response", reponse);
         return response;
       } else {
         return fetch(event.request)
@@ -23,6 +24,7 @@ self.addEventListener("fetch", function (event) {
             // response may be used only once
             // we need to save clone to put one copy in cache
             // and serve second one
+            console.log("new fetch response");
             let responseClone = response.clone();
 
             caches.open(CACHE_ID).then(function (cache) {
@@ -31,8 +33,9 @@ self.addEventListener("fetch", function (event) {
             return response;
           })
           .catch(function () {
-              // put another image here if we fail to find anything
-            return caches.match("/sw-test/gallery/myLittleVader.jpg");
+            console.log("error");
+            // put another image here if we fail to find anything
+            return caches.match("/gallery/404.png");
           });
       }
     })
