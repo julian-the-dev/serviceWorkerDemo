@@ -1,3 +1,6 @@
+import { from, Observable } from "rxjs";
+import { map } from "rxjs/operators";
+
 export type ImageData = {
   author: string;
   download_url: string;
@@ -19,31 +22,13 @@ export class ImagesLoader {
       .then((res) => res.json());
   }
 
-  public loadImage(imageData: ImageData): Promise<ImageResult> {
-    return new Promise(function (resolve, reject) {
-      var request = new XMLHttpRequest();
-      request.open("GET", imageData.download_url);
-      request.responseType = "blob";
-
-      request.onload = function () {
-        if (request.status == 200) {
-          resolve({ data: imageData, result: request.response });
-        } else {
-          reject(
-            Error(
-              "Image didn't load successfully; error code:" + request.statusText
-            )
-          );
-        }
-      };
-
-      request.onerror = function () {
-        reject(Error("There was a network error."));
-      };
-
-      // Send the request
-      request.send();
-    });
+  public loadImage(imageData: ImageData): Observable<ImageResult> {
+    return from(window.fetch(imageData.download_url).then(result => result.blob())).pipe(
+      map((blob) => {
+        console.log(blob);
+        return { data: imageData, result: blob as Blob };
+      })
+    );
   }
 
   public insertImageToHtml(
