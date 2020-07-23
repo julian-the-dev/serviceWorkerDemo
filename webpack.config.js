@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 
 module.exports = {
   mode: "development",
@@ -12,16 +13,19 @@ module.exports = {
       title: "Development",
       template: "src/index.html",
     }),
+    new ServiceWorkerWebpackPlugin({
+      entry: path.join(__dirname, "src/sw.js"),
+    })
   ],
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
-        loader: "file-loader?name=/public/icons/[name].[ext]"
+        loader: "file-loader?name=/gallery/[name].[ext]",
       },
       {
         test: /\.tsx?$/,
