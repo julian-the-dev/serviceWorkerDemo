@@ -4,9 +4,15 @@ export class SpinnerLoading {
 
   addSpinner(element: Element) {
     this.spinnerElement = document.createElement("div");
-    this.spinnerElement.setAttribute("id", this.id);
-    this.spinnerElement.setAttribute("style", "background-color: orange;height: 500px;font-size: 40px;");
-    this.spinnerElement.innerText = "Loading";
+    this.spinnerElement.setAttribute(
+      "style",
+      "background-color: transparent;height: 500px;font-size: 40px;text-align: center;padding-top: 200px;"
+    );
+    this.spinnerElement.setAttribute("class", "col-lg-12");
+    const spinnerLogo = document.createElement('div');
+    spinnerLogo.setAttribute('role', 'status');
+    spinnerLogo.setAttribute('class', 'spinner-border');
+    this.spinnerElement.appendChild(spinnerLogo);
     element.appendChild(this.spinnerElement);
   }
   removeSpinner() {

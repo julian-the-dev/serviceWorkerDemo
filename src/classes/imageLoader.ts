@@ -1,5 +1,6 @@
-import { from, Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { ProgressBarLoading } from "./progressBar";
+import { from, Observable, iif } from "rxjs";
+import { map, delay } from "rxjs/operators";
 
 export type ImageData = {
   author: string;
@@ -17,20 +18,31 @@ export type ImageResult = {
 
 export class ImagesLoader {
   private cachedImages: ImageResult[] = [];
-  public getRandomImages(): Promise<ImageData[]> {
-    return window
-      .fetch("https://picsum.photos/v2/list?page=1&limit=10")
-      .then((res) => res.json());
+  public getRandomImages(): Observable<ImageData[]> {
+    return from(
+      window
+        .fetch("https://picsum.photos/v2/list?page=1&limit=10")
+        .then((res) => res.json())
+    );
   }
 
-  public loadImage(imageData: ImageData): Observable<ImageResult> {
+  public loadImage(
+    imageData: ImageData,
+    progressBarLoading?: ProgressBarLoading
+  ): Observable<ImageResult> {
     return from(
-      window.fetch(imageData.download_url).then((result) => {console.log(result);return result.blob();})
+      window.fetch(imageData.download_url).then((result) => {
+        return result.blob();
+      })
     ).pipe(
+      // add delay to add time to see the progress bar
+      delay(Math.random() * 2000),
       map((blob) => {
         const data = { data: imageData, result: blob as Blob };
-        console.log(data);
         this.cachedImages.push(data);
+        if (progressBarLoading) {
+          progressBarLoading.increment();
+        }
         return data;
       })
     );
@@ -40,13 +52,14 @@ export class ImagesLoader {
     return this.cachedImages;
   }
 
-  public insertImageToHtml(
-    element: Element,
-    imageResult: ImageResult
-  ): void {
+  public resetCachedImages(): void {
+    this.cachedImages = [];
+  }
+
+  public insertImageToHtml(element: Element, imageResult: ImageResult): void {
     const div = document.createElement("div");
     div.setAttribute("class", "col-md-4");
-    const myImage = document.createElement("img")
+    const myImage = document.createElement("img");
     myImage.setAttribute("style", "width: 100%");
     const imageURL = window.URL.createObjectURL(imageResult.result);
     myImage.src = imageURL;
